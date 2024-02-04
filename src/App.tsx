@@ -1,5 +1,5 @@
 import "@mantine/core/styles.css";
-import { Accordion, Anchor, AppShell, Button, Container, Fieldset, Group, NumberInput, MantineProvider, Modal, Select, Table, TextInput, getBreakpointValue, px } from "@mantine/core";
+import { Accordion, AppShell, Button, Container, Fieldset, Group, NumberInput, MantineProvider, Modal, Select, Table, TextInput, Title} from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { theme } from "./theme";
 import { useState } from "react";
@@ -37,19 +37,6 @@ type Tag = {
   damage_cost: number;
   cooldown_cost: number;
 }
-
-const tag_costs = {
-  Damage: {damage: 2, cooldown: 2},
-  Ranged: {damage: -1, cooldown: 1},
-  AOE: {damage: -2, cooldown: 2},
-  Immobilize: {damage: -3, cooldown: 3},
-  CooldownReduction: {damage: -1, cooldown: -1}
-}
-
-const example_moves = [
-  {name: 'Move 1', level: 1, attack_type:AttackType.Martial, move_type:MoveType.Standard, tags:[{type:TagType.Damage, damage_cost: 2, cooldown_cost: 2}, {type:TagType.Ranged, damage_cost: -1, cooldown_cost: 0}]},
-  {name: 'Move 2', level: 2, attack_type:AttackType.Melee, move_type:MoveType.Standard, tags:[{type:TagType.Damage, damage_cost: 2, cooldown_cost: 2}, {type:TagType.Damage, damage_cost: 2, cooldown_cost: 2}, {type:TagType.Ranged, damage_cost: -1, cooldown_cost: 0}]}
-]
 
 function calculate_damage(type: MoveType, level:number, tags: Tag[]) {
   let damage = 1;
@@ -228,6 +215,24 @@ export default function App() {
     }
   }
 
+  function changeLevel(value:string|number) {
+    if (typeof value === "number") {
+      setNewLevel(value);
+    }
+  }
+
+  function changeTagType(value:string|null) {
+    if (value != null) {
+      setNewTagType(value);
+    }
+  }
+
+  function changeTagCost(value:string|null) {
+    if (value != null) {
+      setNewTagCost(value);
+    }
+  }
+
   function getAvailableTagTypes() {
     let availableTags = [];
     let currentCooldown = calculate_cooldown(newMoveType, newTags);
@@ -367,7 +372,7 @@ export default function App() {
       >
         <AppShell.Header>
           <Group h="100%" px="md">
-            <Anchor href="/kr-rpg-move-builder" underline="never" size="xl">Kamen Rider RPG Move Builder</Anchor>
+            <Title order={1} size="h2">Kamen Rider RPG Move Builder</Title>
           </Group>
         </AppShell.Header>
 
@@ -398,7 +403,7 @@ export default function App() {
                       value={newName}
                       onChange={(event) => setNewName(event.currentTarget.value)}
                     />
-                    <NumberInput label="Level" min={1} max={3} value={newLevel} onChange={setNewLevel} />
+                    <NumberInput label="Level" min={1} max={3} value={newLevel} onChange={changeLevel} />
                     <Select label="Attack Type" data={[AttackType.Martial,AttackType.Melee,AttackType.Ranged]} value={newAttackType} onChange={changeAttackType} />
                     <Select label="Move Type" data={[MoveType.Standard, MoveType.Finishing, MoveType.Combo]} value={newMoveType} onChange={changeMoveType} />
                     <p>Tags: {print_tags(newTags)}</p>
@@ -417,8 +422,8 @@ export default function App() {
         </AppShell.Main>
       </AppShell>
       <Modal opened={opened} onClose={close} title="Add Tag" centered>
-        <Select label="Tag Type" data={getAvailableTagTypes()} value={newTagType} onChange={setNewTagType} />
-        { getAvailableCosts().length > 0 && (<Select label="Cost" data={getAvailableCosts()} value={newTagCost} onChange={setNewTagCost} />)}
+        <Select label="Tag Type" placeholder="Choose a Tag Type" data={getAvailableTagTypes()} value={newTagType} onChange={changeTagType} />
+        { getAvailableCosts().length > 0 && (<Select label="Cost" placeholder="Choose a Tag Cost" data={getAvailableCosts()} value={newTagCost} onChange={changeTagCost} />)}
         <Button onClick={saveTag}>Save</Button>
       </Modal>
     </MantineProvider>
