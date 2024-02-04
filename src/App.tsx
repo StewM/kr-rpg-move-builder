@@ -305,7 +305,11 @@ export default function App() {
   }
 
   function clearTags() {
-    setNewTags([]);
+    let new_tags = [];
+    if (newAttackType == AttackType.Ranged && newMoveType == MoveType.Standard) {
+      new_tags.push({type:TagType.Ranged, damage_cost: -1, cooldown_cost: 0})
+    }
+    setNewTags(new_tags);
   }
 
   function saveTag() {
